@@ -60,3 +60,15 @@ for _, arg := range os.Args[1:] {
     
 }
 ```
+#### 1.3
+- map存储键值对，提供常数级别的检索。key值需要是能用==进行比较的类型，value可以是任意类型。make函数用来创建一个空的map
+```go
+//counts 是key为string类型 value为int类型的map
+counts := make(map[string]int)
+
+counts[input.Text()]++ //key不在map中时会自动插入，value为0值
+//上面的代码等价于如下两行
+line := input.Text()
+counts[line] = counts[line] + 1
+```
+- range map迭代的顺序是随机的，这一点同其他语言差不多
