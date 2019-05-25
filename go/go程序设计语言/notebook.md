@@ -1,5 +1,5 @@
-### Ch1
-#### 1.1
+## Ch1
+### 1.1 Hello, World
 - go run xxx.go 直接运行程序
 - go build xxx.go 编译连接生成可执行文件
 - 通过包来组织，文件开头用package声明属于哪个包。用import来导入包
@@ -8,7 +8,7 @@
 - go fmt 可以格式化指定的文件中的代码。前提是代码可以编译过
 - goimports可以按需管理导入，不是标准发布，用go get golang.org/x/tools/cmd/goimports 可以获得
 
-#### 1.2
+### 1.2 Command-Line Arguments
 - 切片，类似于Python，索引从0开始，s[i]表示第i+1个元素。切片不包含最后一个索引，s[i:j]表示第i+1个元素到第j个元素。s[:]等于s[0:len(s)]
 - os.Args os.Args[0]是命令本身的名字，见下面的输出
 ```go
@@ -60,7 +60,10 @@ for _, arg := range os.Args[1:] {
     
 }
 ```
-#### 1.3
+- strings.Join(os.Args[1:], sep)  将一系列字符串连接为一个字符串，之间用sep来分隔
+- var stringSlice [] string 新建切片
+
+### 1.3 Finding Duplicate Lines
 - map存储键值对，提供常数级别的检索。key值需要是能用==进行比较的类型，value可以是任意类型。make函数用来创建一个空的map
 ```go
 //counts 是key为string类型 value为int类型的map
@@ -72,3 +75,6 @@ line := input.Text()
 counts[line] = counts[line] + 1
 ```
 - range map迭代的顺序是随机的，这一点同其他语言差不多
+```
+
+```
