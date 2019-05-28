@@ -75,6 +75,32 @@ line := input.Text()
 counts[line] = counts[line] + 1
 ```
 - range map迭代的顺序是随机的，这一点同其他语言差不多
+```go
+for line, n := range counts {
+}
 ```
+- bufio 处理输入输出的包，最常用的特性是Scanner，读取输入，并拆分成行或者单词。是处理行输入的最简单的方式。Scanner从标准输入读取，每次调用input.Scan()读取一行，并把最后的换行符删掉，读取的结果可以通过调用input.Text()。Scan()函数在有输入时返回true，没有输入时返回false。
 
+```go
+input := bufio.NewScanner(os.Stdin)
+for input.Scan() {
+    counts[input.Text()]++
+}
+```
+- fmt.Printf函数和C语言中的printf函数差不多，通过一些表达式来格式化输出。第一个参数是格式化字符串，用来指定后面的参数如何被格式化，每个参数由%+字符来指定，%d输出十进制整数，%s是字符串，这些转换go程序员称之为verbs，下面列出一些常见的转换
+```go
+%d 十进制整形数
+%x, %o, %b 十六进制、八进制、二进制整数
+%f, %g, %e 浮点数如: 3.141593 3.141592653589793 3.141593e+00
+%t 布尔值: true or false
+%c 字符 (Unicodecode point)
+%s 字符串
+%q 带引号的字符串 "abc" or rune 'c'
+%v 内置的任何类型
+%T 任何类型
+%% 真正的百分号
+```
+- 字符串字面值可以包含\t（tab）\n（换行）等转义序列（escape sequences）来表示不可见字符。Printf函数默认不会换行。f结尾的函数如log.Printf,fmt.Errorf使用和fmt.Printf一样的格式化策略。ln结尾（Println）以%v处理参数，并且最后会换行。
+```go
+fmt.Printf("%d\t%s\n", n, line)
 ```
