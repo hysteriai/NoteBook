@@ -104,3 +104,14 @@ for input.Scan() {
 ```go
 fmt.Printf("%d\t%s\n", n, line)
 ```
+- os.Open返回两个值，第一个是一个打开的文件（\*os.File）,这个文件后面会被Scanner读取，第二个返回值是内置的错误类型，如果返回值等于内置类型nil，则文件成功打开，当返回值不为nil时，文件打开出错，错误码中描述的是错误内容。文件读取到末尾时，Close函数会关闭文件，并释放资源。一种简单的处理是Fprintf和%v输出一段信息到标准err流，错误处理后，dup会处理下一个文件。
+```go
+f, err := os.Open(arg)
+if err != nil {
+fmt.Fprintf(os.Stderr, "dup2: %v\n", err)
+continue
+}
+```
+
+- 函数和其他包级别的实体可以用任意顺序声明。
+- map是make创建的数据结构的引用（reference）。当map传递给一个函数时，函数接收到那个引用的一份拷贝，所以被调用的函数对底层数据结构的修改对外层的引用来说也是可见的
