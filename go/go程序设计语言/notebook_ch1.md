@@ -122,7 +122,7 @@ data, err := ioutil.ReadFile(filename)
 if err != nil {
 fmt.Fprintf(os.Stderr, "dup3: %v\n", err)
 }
-for _, line := range strings.Split(string(data), "\n") {
+for _, line := range strings.Split(string(data), "\n") {//range切片返回索引和值
 counts[line]++
 }
 ```
