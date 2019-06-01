@@ -115,3 +115,14 @@ continue
 
 - 函数和其他包级别的实体可以用任意顺序声明。
 - map是make创建的数据结构的引用（reference）。当map传递给一个函数时，函数接收到那个引用的一份拷贝，所以被调用的函数对底层数据结构的修改对外层的引用来说也是可见的
+
+- ioutil.ReadFile(在io/ioutil包内)返回能转换成字符串的字节切片，以便于能被strings.Split切割，
+```go
+data, err := ioutil.ReadFile(filename)
+if err != nil {
+fmt.Fprintf(os.Stderr, "dup3: %v\n", err)
+}
+for _, line := range strings.Split(string(data), "\n") {
+counts[line]++
+}
+```
