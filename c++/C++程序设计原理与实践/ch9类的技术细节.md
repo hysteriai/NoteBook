@@ -52,6 +52,41 @@ Date next = {2014, 2, 14};//正确
 Date cri = Date{1976, 12, 24}；//正确，比较啰嗦
 Date last(2000, 2, 14);//正确，旧的口语风格
 ```
+- 因为C++中认为一个结构体就是成员默认为共有属性的类，所以可以在struct中定义成员函数，测试代码如下，clang编译器C++17标准编译通过
+```C++
+#include <iostream>
+using namespace std;
+
+struct Date{
+    int y, m, d;
+    Date(int a, int b, int c);
+    void add_day(int n);
+};
+
+Date::Date(int a, int b, int c)
+{
+    y = a;
+    m = b;
+    d = c;
+    return;
+}
+
+void Date::add_day(int n)
+{
+    d += n;
+    return;
+}
+
+int main()
+{
+    Date a  {2000, 1, 1};
+    cout << a.y << " " << a.m << " " << a.d << endl;
+    a.add_day(1);
+    cout << a.y << " " << a.m << " " << a.d << endl;
+
+    return 0;
+}
+```
 
 #### 保持细节私有
 
