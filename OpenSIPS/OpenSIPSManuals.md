@@ -136,3 +136,65 @@ opensips -f opensips.cfg -p "/bin/sed s/PRIVATE_IP/10.0.0.10/g"
 ```
 
 ### 2.2 常用的模板语言+示例
+
+## Load Balancer模块
+### 1、设置目的地
+- 在Load Balancer模块看来，各个目的地是不一样的。LB模块只关心各个目的地能提供哪些资源/服务，配置时只需告知LB模块目的地的地址，以及其能力和对应的最大并发量。
+- 例：
+
+| id | group_id | dst_uri | resources |
+| ---- | ---- | ---- | ---- |
+|  1   |  1   |  1.1.1.1 (A) | reg=1000;push=5000; |
+|  2   |  1   |  2.2.2.2 (B)| reg=1000;vedio=50; |
+|  3   |  1   |  3.3.3.3 (C)| reg=1000;recv=5000; |
+|  4   |  1   |  4.4.4.4 (D)| reg=1000;recv=5000;vedio=200; |
+
+- 可以通过MI（ Management Interface）来修改上述配置
+
+### 2、使用Load Balancer模块
+- 在OpenSIPS脚本中可以用如下方式使用LB模块的功能
+```
+  if (!load_balance("1","reg;push")) {
+      sl_send_reply("500","Service full");
+      exit;
+  }
+```
+- 第一个参数为目的地的组（group_id）。第二个参数为此次会话需要的能力列表。也可以传入第三个可选参数，来指定优先选择剩余某个值或某个百分比能力的目的地。
+- 会话结束LB模块会自动释放资源
+
+### 3、目的选择逻辑
+- 1、根据第一个参数，获取目的地集合
+- 2、筛选出能提供需要的能力（第二个参数）的集合
+- 3、根据每个目的地剩余的能力，结合需要的能力，选择合适的目的地
+- 4、最终胜出的是拥有最大的剩余能力最小值的节点
+- 例：
+```
+load_balance("1","reg;vedio")
+```
+- 1、获取目的地集合，group_id=1的，A B C D
+- 2、需要reg和vedio，剩余B D
+- 3、假设B剩余reg=900;vedio=45;D剩余reg=100;vedio=150;记录剩余的最小能力的值，B是vedio为45，D是reg为100。
+- 4、100>45，所以选择D。
+
+### 4、Disabling and Pinging
+- 可以在脚本中根据自己的逻辑，通过lb_disable()将某个目的设置为disable状态。在之后的LB逻辑中，不会再选择设置为disable状态的目的地
+- 可以通过如下两种方法将目的地设置为enable 状态
+- 1、使用MI指令：lb_status手动启用
+- 2、使用SIP Ping，OpenSIPS给目的地发送OPTIONS消息（可以设置在某条件下发送或者一直发送，一直发送情况下，如果没有回复会将目的地标记为disable状态），目的地回复200 OK，则将目的地修改为enable 状态。
+
+### 5、实时控制LB模块
+- lb_reload：强制重新从DB中重新加载所有配置
+- lb_resize：修改某个目的地的能力值
+- lb_status：查看/修改目的地的状态（enable/disable）
+- lb_list：查看每个目的地最大能力值和已使用的能力
+```
+$ ./opensipsctl fifo lb_list
+Destination:: sip:127.0.0.1:5100 id=1 enabled=yes auto-re=on
+        Resource:: pstn max=3 load=0
+        Resource:: transc max=5 load=1
+        Resource:: vm max=5 load=2
+Destination:: sip:127.0.0.1:5200 id=2 enabled=no auto-re=on
+        Resource:: pstn max=6 load=0
+        Resource:: trans max=57 load=0
+        Resource:: vm max=5 load=0
+```
